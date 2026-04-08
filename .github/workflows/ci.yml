@@ -1,3 +1,4 @@
+```yaml
 name: ML CI/CD Pipeline
 
 on:
@@ -7,7 +8,6 @@ on:
     branches: [ main ]
 
 jobs:
-
   build:
 
     runs-on: ubuntu-latest
@@ -20,7 +20,12 @@ jobs:
     - name: Setup Python
       uses: actions/setup-python@v4
       with:
-        python-version: 3.10
+        python-version: '3.11'
+        cache: 'pip'
+
+    - name: Upgrade pip
+      run: |
+        python -m pip install --upgrade pip
 
     - name: Install dependencies
       run: |
@@ -43,10 +48,11 @@ jobs:
       run: |
         docker push ${{ secrets.DOCKER_USERNAME }}/iris-api:latest
 
-    - name: Pull Docker Image
+    - name: Pull Docker Image (verify push)
       run: |
         docker pull ${{ secrets.DOCKER_USERNAME }}/iris-api:latest
 
     - name: Run Container
       run: |
         docker run -d -p 8000:8000 ${{ secrets.DOCKER_USERNAME }}/iris-api:latest
+```
